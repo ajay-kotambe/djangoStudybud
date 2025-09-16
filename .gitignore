@@ -19,6 +19,10 @@ node_modules/
 package-lock.json
 npm-debug.log
 
+package.json
+theme/static_src/package.json
+node_modules/
+
 # IDEs / editors
 .vscode/
 .idea/
