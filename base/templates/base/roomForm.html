@@ -1,0 +1,14 @@
+{% extends 'main.html'%} {% block content %}
+
+<div>
+  <form method="post" action="">
+    {% csrf_token %}
+    <h3>Create a room</h3>
+    <br>
+    {{form.as_p}}
+    <!-- as_p will round all the form element in p tag to render it on new line  -->
+    <input type="submit" value="Submit" />
+  </form>
+</div>
+
+{% endblock content %}

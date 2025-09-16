@@ -1,0 +1,28 @@
+# Python
+*.pyc
+*.pyo
+__pycache__/
+*.pyd
+
+# Django
+*.sqlite3
+db.sqlite3
+*.log
+
+# Virtual environments
+env/
+.env
+.venv/
+
+# Node / React
+node_modules/
+package-lock.json
+npm-debug.log
+
+# IDEs / editors
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
