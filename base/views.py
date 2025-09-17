@@ -16,6 +16,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 #  for authentications
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import UserCreationForm
 
 
 
@@ -39,7 +40,7 @@ def loginPage(request):
         return redirect('homePage')
     
     if request.method == 'POST':
-        username =  request.POST.get('username')
+        username =  request.POST.get('username').lower()
         password =  request.POST.get('password')
         try:
             user = User.objects.get(username=username)
@@ -55,8 +56,19 @@ def loginPage(request):
     return render(request, 'base/loginRegister.html',context)
 
 def registerPage(request):
-    page = 'registerPage'
-    context = {'page':page}
+    form = UserCreationForm()
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.username = user.username.lower()
+            user.save()
+            login(request,user)
+            return redirect('homePage')
+        else:
+            messages.error(request, "An occurred during registartion ")
+            
+    context = {'form':form}
     return render(request, 'base/loginRegister.html',context)
 
 def home(request):
@@ -78,14 +90,13 @@ def home(request):
 
 @login_required(login_url='loginPage')
 def room(request, pk):
+    room = Room.objects.get(id=pk)
+    roomMessages = room.message_set.all()
     rooms = Room.objects.get(id=pk)
     # print(type(rooms))
     room = Room.objects.get(id=pk)
 
-    # for i in rooms:
-    #     if i["id"] == int(pk):
-    #         room = i
-    context = {"room": room}
+    context = {"room": room,'roomMessages':roomMessages}
     return render(request, "base/room.html", context)
 
 @login_required(login_url='loginPage')

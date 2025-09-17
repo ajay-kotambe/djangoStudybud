@@ -1,20 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Room Template</title>
-  </head>
-  <body>
-    {% extends 'main.html'%} {% block content %}
-    <h1>Room Template</h1>
-    {{room.name}}
-    <br />
-    {{room.description}}
+{% extends 'main.html'%} {% block content %}
+<h1>Room Template</h1>
+{{room.name}}
 
-    <h1>{{room.updated}}</h1>
-    <h1>{{room.created}}</h1>
+<br />
+{{room.description}}
 
-    {% endblock content %}
-  </body>
-</html>
+<div class="comment-wrapper">
+  <h3>Conversation</h3>
+  <hr />
+
+  {% for roomMessage in roomMessages %}
+  <div>
+    <small>
+      @{{roomMessage.user}}
+      <br />
+      {{roomMessage.created|timesince}} ago
+    </small>
+  </div>
+  {% empty%} No Messages Here.. {% endfor %}
+</div>
+
+{% endblock content %}
