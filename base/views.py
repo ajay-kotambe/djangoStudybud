@@ -1,10 +1,20 @@
+# for render and redirect to redirect or render the pages
 from django.shortcuts import render, redirect
+# 
 from django.http import HttpResponse
+# models from .models
 from .models import Room, Topic
+# 
 from django.db.models import Q
+# importing RoomForm from .forms
 from .forms import RoomForm
+# for creating user from default django user
 from django.contrib.auth.models import User
+# for splash messages
 from django.contrib import messages
+# for restrictions
+from django.contrib.auth.decorators import login_required
+#  for authentications
 from django.contrib.auth import authenticate, login, logout
 
 
@@ -23,6 +33,10 @@ def logoutUser(request):
     
 
 def loginPage(request):
+    page = 'loginPage'
+    if request.user.is_authenticated:
+        messages.error(request,"You are already logged in..!")
+        return redirect('homePage')
     
     if request.method == 'POST':
         username =  request.POST.get('username')
@@ -31,22 +45,21 @@ def loginPage(request):
             user = User.objects.get(username=username)
         except:
             messages.error(request,"User doesn't exist")
-        
         user = authenticate(request,username=username, password=password)
-        
         if user is not None:
             login(request,user)
             return redirect('homePage')
         else :
             messages.error(request,"Usernamer or password is incorrect")
+    context = {'page':page}
+    return render(request, 'base/loginRegister.html',context)
 
-        
-        
-    context = {}
+def registerPage(request):
+    page = 'registerPage'
+    context = {'page':page}
     return render(request, 'base/loginRegister.html',context)
 
 def home(request):
-    
     q = request.GET.get('q') if request.GET.get('q') != None else '' 
     rooms = Room.objects.filter(Q(topic__name__contains= q) |
                                 Q(name__contains = q) |
@@ -59,12 +72,11 @@ def home(request):
     #     rooms = Room.objects.all()
     
     room_count = rooms.count()
-
     topics = Topic.objects.all()
     context = {"rooms": rooms, "topics":topics,"count":room_count}
     return render(request, "base/home.html", context)
 
-
+@login_required(login_url='loginPage')
 def room(request, pk):
     rooms = Room.objects.get(id=pk)
     # print(type(rooms))
@@ -74,13 +86,11 @@ def room(request, pk):
     #     if i["id"] == int(pk):
     #         room = i
     context = {"room": room}
-
     return render(request, "base/room.html", context)
 
-
+@login_required(login_url='loginPage')
 def createRoom(request):
     form = RoomForm()
-
     if request.method == "POST":
         # print(request.POST)
         form = RoomForm(request.POST)
@@ -88,15 +98,15 @@ def createRoom(request):
             form.save()
             return redirect("homePage")
         # request.POST.get('name') # if without ModelForm
-
     context = {"form": form}
     return render(request, "base/roomForm.html", context)
 
-
+@login_required(login_url='loginPage')
 def updateRoom(request,pk):
     room = Room.objects.get(id=pk)
     form = RoomForm(instance=room)
-    
+    if request.user != room.host:
+        return HttpResponse('You are not allowed to edit this room..!')
     if request.method == 'POST':
         form = RoomForm(request.POST, instance = room)
         if form.is_valid():
@@ -105,8 +115,11 @@ def updateRoom(request,pk):
     context = {'form':form}
     return render(request,"base/roomForm.html",context)
 
+@login_required(login_url='loginPage')   
 def deleteRoom(request,pk):
     room = Room.objects.get(id=pk) 
+    if request.user != room.host:
+        return HttpResponse('You are not allowed to delete this room..!')
     if request.method == 'POST':
         room.delete()
         return redirect('homePage')
