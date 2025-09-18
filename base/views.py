@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 # 
 from django.http import HttpResponse
 # models from .models
-from .models import Room, Topic
+from .models import Room, Topic, Message
 # 
 from django.db.models import Q
 # importing RoomForm from .forms
@@ -88,14 +88,21 @@ def home(request):
     context = {"rooms": rooms, "topics":topics,"count":room_count}
     return render(request, "base/home.html", context)
 
-@login_required(login_url='loginPage')
 def room(request, pk):
     room = Room.objects.get(id=pk)
-    roomMessages = room.message_set.all()
-    rooms = Room.objects.get(id=pk)
+    roomMessages = room.message_set.all().order_by('-created')
+    # rooms = Room.objects.get(id=pk)
     # print(type(rooms))
     room = Room.objects.get(id=pk)
-
+    
+    if request.method == 'POST':
+        message = Message.objects.create(
+            user = request.user,
+            room = room,
+            body = request.POST.get('body')
+        )
+        return redirect('room',pk = room.id)
+    
     context = {"room": room,'roomMessages':roomMessages}
     return render(request, "base/room.html", context)
 

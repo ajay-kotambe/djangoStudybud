@@ -16,8 +16,16 @@
       <br />
       {{roomMessage.created|timesince}} ago
     </small>
+    <p>{{roomMessage.body}}</p>
   </div>
   {% empty%} No Messages Here.. {% endfor %}
 </div>
 
-{% endblock content %}
+{% if request.user.is_authenticated %}
+<div class="comment-form">
+  <form method="POST" action="">
+    {% csrf_token %}
+    <input type="text" name="body" placeholder="Write your message here..." />
+  </form>
+</div>
+{% endif %} {% endblock content %}
