@@ -18,7 +18,7 @@ class Room(models.Model):
     # todo if the topic model is declared below the this model then we have to add topic in colons like this models.ForeinKey('Topic')
     name = models.CharField(max_length=200)
     description = models.TextField(null=True)
-    # participants=
+    participants=models.ManyToManyField(User, related_name='participants', blank=True)
     updated = models.DateTimeField(auto_now=True)
     # auto_now extecute everytime when we save it
     created = models.DateTimeField(auto_now_add=True)

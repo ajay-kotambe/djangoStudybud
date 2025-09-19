@@ -91,6 +91,7 @@ def home(request):
 def room(request, pk):
     room = Room.objects.get(id=pk)
     roomMessages = room.message_set.all().order_by('-created')
+    participants = room.participants.all()
     # rooms = Room.objects.get(id=pk)
     # print(type(rooms))
     room = Room.objects.get(id=pk)
@@ -101,9 +102,10 @@ def room(request, pk):
             room = room,
             body = request.POST.get('body')
         )
+        room.participants.add(request.user)
         return redirect('room',pk = room.id)
     
-    context = {"room": room,'roomMessages':roomMessages}
+    context = {"room": room,'roomMessages':roomMessages, 'participants':participants}
     return render(request, "base/room.html", context)
 
 @login_required(login_url='loginPage')
@@ -142,3 +144,18 @@ def deleteRoom(request,pk):
         room.delete()
         return redirect('homePage')
     return render(request,'base/delete.html',{'obj':room})
+
+
+@login_required(login_url='loginPage')   
+def deleteMessage(request,pk):
+    try:
+        roomMessage = Message.objects.get(id=pk) 
+    except:
+        messages.error(request, 'Message does not exist')
+        return redirect('homePage')
+    if request.user != roomMessage.user:
+        return HttpResponse('You are not allowed to delete this room..!')
+    if request.method == 'POST':
+        roomMessage.delete()
+        return redirect('homePage')
+    return render(request,'base/delete.html',{'obj':roomMessage})
