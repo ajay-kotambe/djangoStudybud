@@ -4,6 +4,9 @@
 __pycache__/
 *.pyd
 
+# theme-installations
+udtheme/
+
 # Django
 *.sqlite3
 db.sqlite3
@@ -30,3 +33,5 @@ node_modules/
 # OS files
 .DS_Store
 Thumbs.db
+
+

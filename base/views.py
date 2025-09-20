@@ -29,6 +29,7 @@ rooms = [
 ]
 
 def logoutUser(request):
+    
     logout(request)
     return redirect('homePage')
     
@@ -85,8 +86,9 @@ def home(request):
     
     room_count = rooms.count()
     topics = Topic.objects.all()
+        
     roomMessages = Message.objects.filter(Q(room__topic__name__contains=q))
-    context = {"rooms": rooms, "topics":topics,"count":room_count, 'roomMessages':roomMessages}
+    context = {"rooms": rooms, "topics":topics,"count":room_count, 'roomMessages':roomMessages,'topicCount':topics.count()}
     return render(request, "base/home.html", context)
 
 def room(request, pk):
@@ -113,10 +115,11 @@ def room(request, pk):
 @login_required(login_url='loginPage')
 def userProfile(request,pk):
     user = User.objects.get(id=pk)
-    rooms = user.room_set.all()
+    rooms = user.room_set.all() 
+    roomMessages = user.message_set.all()
+    topics = Topic.objects.all()
     
-    
-    context = {'user':user,'rooms':rooms}
+    context = {'user':user,'rooms':rooms,'roomMessages':roomMessages,'topics':topics}
     return render(request, 'base/profile.html',context)
 
 
@@ -127,7 +130,9 @@ def createRoom(request):
         # print(request.POST)
         form = RoomForm(request.POST)
         if form.is_valid():
-            form.save()
+            room = form.save(commit=False)
+            room.host = request.user
+            room.save()
             return redirect("homePage")
         # request.POST.get('name') # if without ModelForm
     context = {"form": form}

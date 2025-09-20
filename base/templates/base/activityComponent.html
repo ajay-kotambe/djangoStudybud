@@ -3,7 +3,10 @@
 <hr />
 {% for msg in roomMessages %}
 <div>
-  <small>@{{msg.user}} {{msg.created|timesince}}</small>
+  <small>
+    <a href="{% url 'userProfile' msg.user.id %}"> @{{msg.user}} </a>
+    {{msg.created|timesince}}</small
+  >
   <small> replied to post '{{msg.room}}' </small>
   <p>{{msg}}</p>
 </div>

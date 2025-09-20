@@ -23,7 +23,9 @@
         <a href="{% url 'deleteMessage' roomMessage.id %}">Delete</a>
         {% endif %}
         <small>
-          @{{roomMessage.user}}
+          <a href="{% url 'userProfile' roomMessage.user.id %}">
+            @{{roomMessage.user}}
+          </a>
           <br />
           {{roomMessage.created|timesince}} ago
         </small>
