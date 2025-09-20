@@ -78,17 +78,19 @@ def home(request):
                                 Q(name__contains = q) |
                                 Q(description__contains = q))
     
+    forIndRooms = Room.objects.filter(Q(topic__name__contains= q))
+    
     # q = request.GET.get('q')  
     # if q:  
     #     rooms = Room.objects.filter(topic__name__icontains=q)
     # else:  
     #     rooms = Room.objects.all()
-    
-    room_count = rooms.count()
+    # print(rooms)
+    roomCount = forIndRooms.count()
     topics = Topic.objects.all()
-        
+    # print(roomCount)
     roomMessages = Message.objects.filter(Q(room__topic__name__contains=q))
-    context = {"rooms": rooms, "topics":topics,"count":room_count, 'roomMessages':roomMessages,'topicCount':topics.count()}
+    context = {"rooms": rooms, "topics":topics,"roomCount":roomCount, 'roomMessages':roomMessages,'topicCount':topics.count()}
     return render(request, "base/home.html", context)
 
 def room(request, pk):
@@ -98,6 +100,7 @@ def room(request, pk):
     # rooms = Room.objects.get(id=pk)
     # print(type(rooms))
     room = Room.objects.get(id=pk)
+    
     
     if request.method == 'POST':
         message = Message.objects.create(
