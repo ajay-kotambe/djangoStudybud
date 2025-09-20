@@ -1,0 +1,23 @@
+<div>
+  {% comment %} href="{% url 'room' pk=room.id%}" {% endcomment %}
+  <div>
+    {% for room in rooms %} {% if user == room.host %}
+    <a href="{% url 'updateRoom' room.id %}">Edit</a>
+    <a href="{% url 'deleteRoom' room.id %}">Delete</a>
+    {% endif %}
+
+    <a class="text-red-500" href="{% url 'userProfile' room.host.id %}"
+      >@{{room.host.username}}</a
+    >
+    <h4>
+      {{forloop.counter}} --
+      <a href="{% url 'room' room.id%}">{{room.name}}</a>
+    </h4>
+
+    <small> {{room.topic.name}} </small>
+    <hr />
+    {% empty %}
+    <h4>No Rooms Found</h4>
+    {% endfor %}
+  </div>
+</div>

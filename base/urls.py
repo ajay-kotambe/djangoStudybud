@@ -7,8 +7,14 @@ urlpatterns = [
     path("login/", views.loginPage, name="loginPage"),
     path("register/", views.registerPage, name="registerPage"),
     path("logout/", views.logoutUser, name="logoutUser"),
+    
+    
     path("", views.home, name="homePage"),
     path("room/<str:pk>/", views.room, name="room"),
+    path("profile/<str:pk>", views.userProfile, name="userProfile"),
+    
+    
+    
     path("create-room/", views.createRoom, name="createRoom"),
     path("update-room/<str:pk>/", views.updateRoom, name="updateRoom"),
     path("delete-room/<str:pk>/", views.deleteRoom, name="deleteRoom"),
