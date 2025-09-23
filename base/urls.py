@@ -23,4 +23,7 @@ urlpatterns = [
     
     path("update-user/", views.updateUser, name="updateUser"),
     
+    path("topics/", views.topicsPage, name="topicsPage"),
+    path("activities/", views.activityPage, name="activityPage"),
+    
 ]
