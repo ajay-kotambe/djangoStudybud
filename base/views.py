@@ -7,7 +7,7 @@ from .models import Room, Topic, Message
 # 
 from django.db.models import Q
 # importing RoomForm from .forms
-from .forms import RoomForm
+from .forms import RoomForm, UserForm
 # for creating user from default django user
 from django.contrib.auth.models import User
 # for splash messages
@@ -35,7 +35,7 @@ def logoutUser(request):
     
 
 def loginPage(request):
-    page = 'loginPage'
+
     if request.user.is_authenticated:
         messages.error(request,"You are already logged in..!")
         return redirect('homePage')
@@ -53,10 +53,10 @@ def loginPage(request):
             return redirect('homePage')
         else :
             messages.error(request,"Usernamer or password is incorrect")
-    context = {'page':page}
-    return render(request, 'base/loginRegister.html',context)
+    context = {}
+    return render(request, 'base/login.html',context)
 
-def registerPage(request):
+def signupPage(request):
     form = UserCreationForm()
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -70,7 +70,7 @@ def registerPage(request):
             messages.error(request, "An occurred during registartion ")
             
     context = {'form':form}
-    return render(request, 'base/loginRegister.html',context)
+    return render(request, 'base/signup.html',context)
 
 def home(request):
     q = request.GET.get('q') if request.GET.get('q') != None else '' 
@@ -191,3 +191,19 @@ def deleteMessage(request,pk):
         roomMessage.delete()
         return redirect('homePage')
     return render(request,'base/delete.html',{'obj':roomMessage})
+
+
+@login_required(login_url='loginPage')   
+def updateUser(request):
+    user = request.user
+    form = UserForm(instance=user)
+    if request.method =='POST':
+        form = UserForm(request.POST,instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('userProfile',pk=user.id)
+    
+    
+    
+    context = {'form':form}
+    return render(request,'base/updateUser.html',context)
