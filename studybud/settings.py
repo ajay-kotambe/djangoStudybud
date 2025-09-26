@@ -41,14 +41,26 @@ INSTALLED_APPS = [
     "base.apps.BaseConfig",  # just [base] will also initialize the app # but directly specifying full path will connect the app # "base"
     "theme", 
     
+    # api
+    "myAPI",
+    
+    # rest framework
+    'rest_framework',
+    
+    # CORS
+     "corsheaders",
+    
     # tailwind apps here..
     "tailwind",
      "django_browser_reload",
 ]
 
+AUTH_USER_MODEL = 'base.User'
 TAILWIND_APP_NAME = "theme"
 
 MIDDLEWARE = [
+     "corsheaders.middleware.CorsMiddleware",
+
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -126,12 +138,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "/static/"
+MEDIA_URL = '/images/'
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
 
+MEDIA_ROOT = BASE_DIR / 'static/images/userMedia'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+CORS_ALLOW_ALL_ORIGINS = True

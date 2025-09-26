@@ -3,20 +3,20 @@ from django.shortcuts import render, redirect
 # 
 from django.http import HttpResponse
 # models from .models
-from .models import Room, Topic, Message
+from .models import Room, Topic, Message, User
 # 
 from django.db.models import Q
 # importing RoomForm from .forms
-from .forms import RoomForm, UserForm
+from .forms import RoomForm, UserForm, MyUserCreationForm
 # for creating user from default django user
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 # for splash messages
 from django.contrib import messages
 # for restrictions
 from django.contrib.auth.decorators import login_required
 #  for authentications
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserCreationForm
+# from django.contrib.auth.forms import UserCreationForm
 
 
 
@@ -52,14 +52,15 @@ def loginPage(request):
             login(request,user)
             return redirect('homePage')
         else :
-            messages.error(request,"Usernamer or password is incorrect")
+            messages.error(request,"Username or password is incorrect")
     context = {}
     return render(request, 'base/login.html',context)
 
 def signupPage(request):
-    form = UserCreationForm()
+    form = MyUserCreationForm()
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = MyUserCreationForm(request.POST)
+        # print(form)
         if form.is_valid():
             user = form.save(commit=False)
             user.username = user.username.lower()
@@ -67,7 +68,7 @@ def signupPage(request):
             login(request,user)
             return redirect('homePage')
         else:
-            messages.error(request, "An occurred during registartion ")
+            messages.error(request, "An error occurred during registartion ")
             
     context = {'form':form}
     return render(request, 'base/signup.html',context)
@@ -198,7 +199,7 @@ def updateUser(request):
     user = request.user
     form = UserForm(instance=user)
     if request.method =='POST':
-        form = UserForm(request.POST,instance=user)
+        form = UserForm(request.POST,request.FILES, instance=user)
         if form.is_valid():
             form.save()
             return redirect('userProfile',pk=user.id)

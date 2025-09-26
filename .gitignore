@@ -6,6 +6,7 @@ __pycache__/
 
 # theme-installations
 udtheme/
+myAPI/
 
 # Django
 *.sqlite3
